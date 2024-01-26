@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import BurguerButton from "./BurguerButton";
+import SignIn from "../auth/SignIn"
+import AuthDetails from "../auth/AuthDetails";
 
 function NavBar() {
   const [clicked, setClicked] = useState(false);
@@ -9,6 +11,8 @@ function NavBar() {
     //Cuando está true lo tira a false y viceversa
     setClicked(!clicked);
   };
+
+  const isLogged = AuthDetails();
 
   return (
     <>
@@ -21,6 +25,7 @@ function NavBar() {
           <a onClick= {handleClick} href="/Database">Base de datos</a>
           <a onClick= {handleClick} href="/GetRandomCard">Carta aleatoria</a>
         </div>
+        <AuthDetails/>
         <div className="burguerButton">
           <BurguerButton clicked={clicked} handleClick={handleClick} />
         </div>
