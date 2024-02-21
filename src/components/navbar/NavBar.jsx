@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import BurguerButton from './BurguerButton';
 import AuthDetails from '../auth/AuthDetails';
 
-function SubMenu({ title, items }) {
-  const [isOpen, setIsOpen] = useState(false);
+function SubMenu({ title, items, openMenu, index, activeMenu }) {
+  const isOpen = activeMenu === index;
+  const menuRef = useRef(null);
 
-  const toggle = () => setIsOpen(!isOpen);
+  const toggle = () => openMenu(isOpen ? null : index);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        openMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenu]);
 
   return (
-    <MenuContainer>
+    <MenuContainer ref={menuRef}>
       <MenuTitle onClick={toggle}>{title}</MenuTitle>
       {isOpen && (
         <SubMenuContainer className={isOpen ? 'open' : ''}>
@@ -27,6 +40,7 @@ function SubMenu({ title, items }) {
 
 function NavBar() {
   const [clicked, setClicked] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const handleClick = () => {
     setClicked(!clicked);
@@ -53,14 +67,14 @@ function NavBar() {
           Responsive <span> NavBar</span>
         </h2>
         <MenusContainer>
-          <SubMenu title="Menu 1" items={menu1Items} />
-          <SubMenu title="Menu 2" items={menu2Items} />
+          <SubMenu title="Menu 1" items={menu1Items} openMenu={setActiveMenu} index={0} activeMenu={activeMenu} />
+          <SubMenu title="Menu 2" items={menu2Items} openMenu={setActiveMenu} index={1} activeMenu={activeMenu} />
         </MenusContainer>
         <AuthDetails/>
-        <div className="burguerButton">
+        {/* <div className="burguerButton">
           <BurguerButton clicked={clicked} handleClick={handleClick} />
         </div>
-        <BgDiv className={`initial ${clicked ? " active" : ""}`}></BgDiv>
+        <BgDiv className={`initial ${clicked ? " active" : ""}`}></BgDiv> */}
       </NavContainer>
     </>
   );
@@ -100,9 +114,14 @@ const SubMenuContainer = styled.div`
   box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
   transform: scaleY(0);
   transform-origin: top;
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, height 0.3s ease-in-out;
+  min-width: max-content;
   &.open {
     transform: scaleY(1);
+  }
+  a {
+    display: block;
+    white-space: nowrap;
   }
 `;
 
