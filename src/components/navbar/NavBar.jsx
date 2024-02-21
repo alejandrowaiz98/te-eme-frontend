@@ -1,18 +1,50 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import BurguerButton from "./BurguerButton";
-import SignIn from "../auth/SignIn"
-import AuthDetails from "../auth/AuthDetails";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import BurguerButton from './BurguerButton';
+import AuthDetails from '../auth/AuthDetails';
+
+function SubMenu({ title, items }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggle = () => setIsOpen(!isOpen);
+
+  return (
+    <MenuContainer>
+      <MenuTitle onClick={toggle}>{title}</MenuTitle>
+      {isOpen && (
+        <SubMenuContainer className={isOpen ? 'open' : ''}>
+          {items.map((item, index) => (
+            <Link key={index} to={item.path} onClick={toggle}>
+              {item.label}
+            </Link>
+          ))}
+        </SubMenuContainer>
+      )}
+    </MenuContainer>
+  );
+}
 
 function NavBar() {
   const [clicked, setClicked] = useState(false);
 
   const handleClick = () => {
-    //Cuando está true lo tira a false y viceversa
     setClicked(!clicked);
   };
 
   const isLogged = AuthDetails();
+
+  const menu1Items = [
+    { label: 'Opción 1', path: '/opcion1' },
+    { label: 'Opción 2', path: '/opcion2' },
+    // Agrega aquí más opciones si las necesitas
+  ];
+
+  const menu2Items = [
+    { label: 'Opción A', path: '/opcionA' },
+    { label: 'Opción B', path: '/opcionB' },
+    // Agrega aquí más opciones si las necesitas
+  ];
 
   return (
     <>
@@ -20,11 +52,10 @@ function NavBar() {
         <h2>
           Responsive <span> NavBar</span>
         </h2>
-        <div className={`links ${clicked ? "active" : ""}`}>
-          <a onClick= {handleClick} href="/">Home</a>
-          <a onClick= {handleClick} href="/Database">Base de datos</a>
-          <a onClick= {handleClick} href="/GetRandomCard">Carta aleatoria</a>
-        </div>
+        <MenusContainer>
+          <SubMenu title="Menu 1" items={menu1Items} />
+          <SubMenu title="Menu 2" items={menu2Items} />
+        </MenusContainer>
         <AuthDetails/>
         <div className="burguerButton">
           <BurguerButton clicked={clicked} handleClick={handleClick} />
@@ -38,73 +69,41 @@ function NavBar() {
 export default NavBar;
 
 const NavContainer = styled.nav`
-  h2 {
-    color: white;
-    font-weight: 400;
-    span {
-      font-weight: bold;
-    }
-  }
-
-  .burguerButton {
-    @media (min-width: 768px) {
-      display: none;
-    }
-  }
-
-  .links {
-    transition: all .5s ease;
-    position: absolute;
-    top: -700px;
-    left: -2000px;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    a {
-      color: white;
-      font-size: 1rem;
-      display: block;
-    }
-    @media (min-width: 768px) {
-      position: initial;
-      margin: 0;
-      a{
-        font-size: 1rem;
-        color: white;
-        display: inline;
-      }
-    }
-  }
-
-  .links.active {
-    width: 100%;
-    display: block;
-    position: absolute;
-    margin-left: auto;
-    margin-right: auto;
-    top: 30%;
-    left: 0;
-    right: 0;
-    text-align: center;
-    a {
-      font-size: 2rem;
-      margin-top: 1rem;
-      color: white;
-    }
-  }
-
-  a {
-    color: white;
-    text-decoration: none;
-    margin-right: 1rem;
-  }
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0.4rem;
   background-color: #333;
+`;
+
+const MenusContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  gap: 3rem;
+`;
+
+const MenuContainer = styled.div`
+  position: relative;
+`;
+
+const MenuTitle = styled.a`
+  cursor: pointer;
+  color: white;
+`;
+
+const SubMenuContainer = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s ease-in-out;
+  &.open {
+    transform: scaleY(1);
+  }
 `;
 
 const BgDiv = styled.div`

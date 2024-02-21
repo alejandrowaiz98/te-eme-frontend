@@ -1,11 +1,16 @@
-import './App.css';
-import NavBar from "./components/navbar/NavBar";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavBar from './components/navbar/NavBar';
+import GetRandomCard from './components/GetRandomCard';
 
 function App() {
   return (
-    <div className="App">
-      <NavBar/>
-    </div>
+    <Router>
+      <NavBar />
+      <Routes>
+        <Route path="/GetRandomCard" element={<GetRandomCard />} />
+      </Routes>
+    </Router>
   );
 }
 
